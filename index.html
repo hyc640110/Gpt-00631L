@@ -339,10 +339,10 @@ canvas{display:block;width:100%;border-radius:6px}
 <!-- 結果卡片欄位 -->
 <div class="grid3" style="max-width:640px;margin:0 auto 12px" id="resultCards"></div>
 
-<p class="footer">🚀 單檔修正版 v2.0：改用 TWSE 股價來源、PATCH 同步、金鑰雜湊、輸入保護。</p>
+<p class="footer">🚀 單檔修正版 v3.0：股價多來源備援、Firebase 同步、GitHub Pages/iPhone 最佳化。</p>
 
 <script>
-/* 00631L Pro Web App v2.0 單檔修正版 */
+/* 00631L Pro Web App v3.0 單檔修正版 */
 var STORAGE_KEY='portfolio-v4';
 var CONF_KEY='portfolio-sync-conf';
 var addOnEnabled=true;
@@ -378,7 +378,7 @@ async function fetchJsonWithTimeout(url, timeoutMs) {
   var ctrl = new AbortController();
   var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 8000);
   try {
-    var res = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+    var res = await fetch(url, { cache: 'no-store', signal: ctrl.signal, mode: 'cors' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
   } finally {
@@ -386,42 +386,132 @@ async function fetchJsonWithTimeout(url, timeoutMs) {
   }
 }
 
+/*
+  v3.0 股價更新策略：
+  1) TWSE MIS JSONP：最適合 GitHub Pages，可避開瀏覽器 CORS 限制。
+  2) TWSE MIS fetch：若瀏覽器/交易所允許 CORS，直接讀取。
+  3) TWSE OpenAPI：盤後/收盤價備援。
+  若全部失敗，保留原手動價格，不覆蓋舊值。
+*/
+function fetchJsonp(url, timeoutMs) {
+  return new Promise(function(resolve, reject){
+    var cbName = '__twse_cb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+    var script = document.createElement('script');
+    var timer = setTimeout(function(){ cleanup(); reject(new Error('JSONP timeout')); }, timeoutMs || 9000);
+    function cleanup(){
+      clearTimeout(timer);
+      try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+      if (script && script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cbName] = function(data){ cleanup(); resolve(data); };
+    script.onerror = function(){ cleanup(); reject(new Error('JSONP failed')); };
+    script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + encodeURIComponent(cbName) + '&_=' + Date.now();
+    document.head.appendChild(script);
+  });
+}
+
 function getTwseChannels(code) {
   return ['tse_' + code + '.tw', 'otc_' + code + '.tw'];
 }
 
-function parseTwsePrice(json) {
+function cleanPrice(raw) {
+  if (raw == null) return null;
+  var s = String(raw).replace(/,/g, '').trim();
+  if (!s || s === '-' || s === '--' || s === 'NaN') return null;
+  var p = parseFloat(s);
+  return isFinite(p) && p > 0 ? p : null;
+}
+
+function parseTwsePrice(json, code) {
   if (!json || !json.msgArray || !json.msgArray.length) return null;
-  var row = json.msgArray[0];
-  var raw = row.z && row.z !== '-' ? row.z : (row.y && row.y !== '-' ? row.y : null);
-  if (!raw) return null;
-  var price = parseFloat(String(raw).replace(/,/g, ''));
-  return price > 0 ? price : null;
+  var rows = json.msgArray;
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var rowCode = row.c || row.ch || '';
+    if (code && String(rowCode).indexOf(code) === -1 && rows.length > 1) continue;
+    var candidates = [row.z, row.y, row.o, row.h, row.l];
+    for (var j = 0; j < candidates.length; j++) {
+      var price = cleanPrice(candidates[j]);
+      if (price) return price;
+    }
+  }
+  return null;
+}
+
+function parseOpenApiPrice(rows, code) {
+  if (!Array.isArray(rows)) return null;
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var c = r.Code || r.code || r['證券代號'] || r['股票代號'] || r['有價證券代號'];
+    if (String(c).trim() !== String(code)) continue;
+    var keys = ['ClosingPrice','Closing Price','Close','close','收盤價','收盤價(元)','收盤平均價','MonthlyAveragePrice','月平均收盤價'];
+    for (var k = 0; k < keys.length; k++) {
+      var price = cleanPrice(r[keys[k]]);
+      if (price) return price;
+    }
+    // 最後備援：掃描欄位中第一個合理的價格欄
+    for (var key in r) {
+      if (/收盤|Closing|Close|平均/.test(key)) {
+        var p = cleanPrice(r[key]);
+        if (p) return p;
+      }
+    }
+  }
+  return null;
+}
+
+async function fetchTaiwanPriceFromMis(code) {
+  var channels = getTwseChannels(code);
+  for (var i = 0; i < channels.length; i++) {
+    var base = 'https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=' + encodeURIComponent(channels[i]) + '&json=1&delay=0';
+    try {
+      var jsonp = await fetchJsonp(base, 9000);
+      var price1 = parseTwsePrice(jsonp, code);
+      if (price1) return { price: price1, source: 'TWSE 即時' };
+    } catch (e1) {}
+    try {
+      var json = await fetchJsonWithTimeout(base + '&_=' + Date.now(), 9000);
+      var price2 = parseTwsePrice(json, code);
+      if (price2) return { price: price2, source: 'TWSE 即時' };
+    } catch (e2) {}
+  }
+  throw new Error('MIS failed');
+}
+
+async function fetchTaiwanPriceFromOpenApi(code) {
+  var urls = [
+    'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL',
+    'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_AVG_ALL'
+  ];
+  for (var i = 0; i < urls.length; i++) {
+    try {
+      var rows = await fetchJsonWithTimeout(urls[i] + '?_=' + Date.now(), 10000);
+      var price = parseOpenApiPrice(rows, code);
+      if (price) return { price: price, source: 'TWSE 收盤' };
+    } catch (e) {}
+  }
+  throw new Error('OpenAPI failed');
 }
 
 async function fetchTaiwanPrice(code) {
-  var channels = getTwseChannels(code);
-  for (var i = 0; i < channels.length; i++) {
-    var url = 'https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=' + encodeURIComponent(channels[i]) + '&json=1&delay=0&_=' + Date.now();
-    try {
-      var json = await fetchJsonWithTimeout(url, 8000);
-      var price = parseTwsePrice(json);
-      if (price) return price;
-    } catch (e) {}
-  }
+  try { return await fetchTaiwanPriceFromMis(code); } catch (e) {}
+  try { return await fetchTaiwanPriceFromOpenApi(code); } catch (e2) {}
   throw new Error('price fetch failed: ' + code);
 }
 
 async function fetchPriceSilent(code, inputId, varName, timeId, btnId) {
   var btn = g(btnId); if(btn) btn.textContent = '⏳';
   try {
-    var price = await fetchTaiwanPrice(code);
+    var result = await fetchTaiwanPrice(code);
+    var price = result.price;
     g(inputId).value = price;
     if (varName === 'price631val') price631val = price;
     else if (varName === 'price50val') price50val = price;
     else if (varName === 'priceBondval') priceBondval = price;
     var now = new Date();
-    g(timeId).textContent = '● ' + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes() + ' 更新';
+    var hh = now.getHours();
+    var mm = now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes();
+    g(timeId).textContent = '● ' + hh + ':' + mm + ' ' + (result.source || '更新');
     if(btn) btn.textContent = '🔄';
     return true;
   } catch (e) {
