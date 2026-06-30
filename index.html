@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>00631L Pro Web App v5 Ultimate</title>
+<style>
+:root{
+  --bg:#050914;--bg2:#081222;--card:#111a29;--card2:#172235;--line:rgba(255,255,255,.10);
+  --text:#eef5ff;--muted:#8da0b4;--blue:#4fc3f7;--purple:#9aa5ff;--green:#91e7a7;
+  --yellow:#ffd54f;--orange:#ffb74d;--red:#ff8a80;--cyan:#2de2e6;--pink:#ce93d8
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:
+  radial-gradient(circle at 20% 0%,rgba(79,195,247,.18),transparent 32%),
+  radial-gradient(circle at 85% 8%,rgba(206,147,216,.15),transparent 30%),
+  linear-gradient(180deg,#06101e,#050914 46%,#04070d);
+  color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:14px 10px 46px}
+.app{max-width:780px;margin:0 auto}
+h1{text-align:center;font-size:23px;font-weight:1000;letter-spacing:-.2px;margin-top:4px}
+.sub{text-align:center;color:var(--muted);font-size:12px;margin:3px 0 14px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:12px;box-shadow:0 18px 42px rgba(0,0,0,.24);overflow:hidden}
+.hero{background:linear-gradient(145deg,rgba(79,195,247,.20),rgba(154,165,255,.12),rgba(255,213,79,.06));border-color:rgba(79,195,247,.28);text-align:center}
+.title{font-size:16px;font-weight:950;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.hero-label{font-size:12px;color:#c4d3e5;font-weight:850}
+.hero-main{font-size:52px;line-height:1.02;font-weight:1000;letter-spacing:-1.5px;margin:8px 0}
+.gain-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;background:rgba(145,231,167,.14);border:1px solid rgba(145,231,167,.16);color:var(--green);font-size:13px;font-weight:950}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.kpi{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px}
+.kpi .label{font-size:11px;color:var(--muted);font-weight:800;margin-bottom:5px}
+.kpi .value{font-size:24px;font-weight:1000;letter-spacing:-.4px}
+.kpi .hint{font-size:11px;color:var(--muted);line-height:1.35;margin-top:4px}
+.btn{border:0;border-radius:999px;padding:10px 14px;background:linear-gradient(135deg,#4fc3f7,#9aa5ff);color:#06101c;font-size:13px;font-weight:1000;cursor:pointer}
+.btn.secondary{background:#1d2b40;color:var(--text);border:1px solid rgba(255,255,255,.12)}
+.btn.red{background:linear-gradient(135deg,#ff8a80,#ffb74d)}
+.pill{border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:4px 9px;font-size:11px;font-weight:900;color:#c7d6e8}
+.asset-dash{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.asset-tile{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:13px}
+.asset-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.badge{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;font-size:13px;font-weight:1000;color:#07101d;flex:none}
+.asset-name{font-size:17px;font-weight:1000}
+.asset-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.asset-val{font-size:25px;font-weight:1000;margin-top:3px}
+.asset-row{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:7px}
+.status{font-weight:900;color:var(--green)}.fail{color:var(--red)}.manual{color:var(--yellow)}
+.bar{height:18px;border-radius:999px;overflow:hidden;display:flex;background:rgba(255,255,255,.06);margin:12px 0 8px}
+.bar div{min-width:1px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px}
+.ai-box{background:linear-gradient(145deg,rgba(45,226,230,.12),rgba(145,231,167,.08));border-color:rgba(45,226,230,.20)}
+.score{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) 0 88%,rgba(255,255,255,.09) 88% 100%);color:#06101c;font-size:22px;font-weight:1000}
+.ai-flex{display:flex;gap:13px;align-items:center}
+.ai-text{font-size:14px;line-height:1.65;color:#dce9f5;font-weight:720}
+.tabs{display:flex;gap:8px;margin-bottom:12px;overflow:auto;padding-bottom:2px}
+.tab{white-space:nowrap;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:var(--text);border-radius:999px;padding:8px 12px;font-weight:900;font-size:12px}
+.tab.active{background:linear-gradient(135deg,#4fc3f7,#9aa5ff);color:#06101c}
+canvas{display:block;width:100%;height:260px;border-radius:18px;background:rgba(255,255,255,.025)}
+.ring-wrap{display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:center}
+.ring{width:140px;height:140px;border-radius:50%;background:conic-gradient(#4fc3f7 0 47.6%,#9aa5ff 47.6% 59.9%,#91e7a7 59.9% 67%,#ffd54f 67% 100%);display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
+.ring::after{content:"配置";width:78px;height:78px;border-radius:50%;background:#101927;display:grid;place-items:center;font-weight:950;color:#d9e7f5}
+.warn{border-radius:18px;background:rgba(255,183,77,.10);border:1px solid rgba(255,183,77,.25);color:#ffcc80;padding:12px;font-size:13px;font-weight:780;line-height:1.55}
+details{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:18px;margin-bottom:10px;overflow:hidden}
+summary{list-style:none;padding:14px 15px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:950;cursor:pointer}
+summary::-webkit-details-marker{display:none}.inside{padding:0 15px 15px}
+input,select{width:100%;background:#172436;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px 11px;color:#fff;font-size:16px;font-weight:850;outline:none}
+label{font-size:11px;color:var(--muted);font-weight:760;margin-bottom:5px;display:block}
+.footer{text-align:center;font-size:10px;color:#56697c;margin-top:12px}
+.hide{display:none}
+@media(max-width:560px){
+ body{padding:12px 9px 38px}.hero-main{font-size:46px}.grid3{grid-template-columns:1fr 1fr}.asset-dash{grid-template-columns:1fr}.ring-wrap{grid-template-columns:1fr}.ring{margin:0 auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>00631L Pro</h1>
+<p class="sub">v5.1 Price Proxy｜四部位＋大跌加碼｜GitHub Pages + Firebase</p>
+
+<section class="card hero">
+  <div class="hero-label">💰 真實總資產</div>
+  <div class="hero-main" id="heroTotal">-</div>
+  <div class="gain-pill" id="todayGain">今日損益：以手動價估算</div>
+  <div class="grid3" style="margin-top:16px;text-align:left">
+    <div class="kpi"><div class="label">淨資產</div><div class="value" id="netAssets">-</div><div class="hint">總資產 - 借款</div></div>
+    <div class="kpi"><div class="label">Beta</div><div class="value" id="realBeta">-</div><div class="hint" id="riskType">-</div></div>
+    <div class="kpi"><div class="label">現金比例</div><div class="value" id="cashPct">-</div><div class="hint">防禦資金</div></div>
+  </div>
+</section>
+
+<section class="card ai-box">
+  <div class="title">🤖 AI 今日配置建議 <span class="pill" id="syncMini">未連線</span></div>
+  <div class="ai-flex">
+    <div class="score" id="score">88</div>
+    <div class="ai-text" id="aiAdvice">分析中...</div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="title">📊 持股 Dashboard <button class="btn secondary" onclick="refreshAll()">⟳ 同步股價</button></div>
+  <div class="asset-dash" id="assetDash"></div>
+  <div class="bar" id="allocBar"></div>
+  <div class="legend" id="allocLegend"></div>
+  <div class="warn" id="quoteWarn" style="display:none;margin-top:12px"></div>
+</section>
+
+<section class="card">
+  <div class="title">🍩 資產分布 <span class="pill">一眼看配置</span></div>
+  <div class="ring-wrap">
+    <div class="ring" id="ring"></div>
+    <div id="ringText" class="grid2"></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="title">🎯 目標偏離 <span class="pill">再平衡參考</span></div>
+  <div class="grid2" id="driftCards"></div>
+</section>
+
+<section class="card">
+  <div class="title">🚨 大跌模式 <button class="btn red" onclick="toggleCrash()">切換檢視</button></div>
+  <div class="grid2" id="crashCards"></div>
+  <div class="warn" id="crashAdvice" style="margin-top:10px"></div>
+</section>
+
+<section class="card">
+  <div class="title">📈 十年資產模擬 <span class="pill">即時互動</span></div>
+  <div class="tabs">
+    <button class="tab active" onclick="setReturnPreset(0,this)">保守</button>
+    <button class="tab" onclick="setReturnPreset(1,this)">標準</button>
+    <button class="tab" onclick="setReturnPreset(2,this)">積極</button>
+  </div>
+  <canvas id="chart"></canvas>
+  <div class="grid3" id="resultCards" style="margin-top:10px"></div>
+</section>
+
+<details>
+  <summary>📝 編輯持股與價格 <span class="pill">展開</span></summary>
+  <div class="inside" id="editAssets"></div>
+</details>
+
+<details>
+  <summary>☁️ Firebase 雲端同步 <span class="pill" id="cloudStatus">未連線</span></summary>
+  <div class="inside">
+    <div class="grid2">
+      <div><label>Firebase 資料庫網址</label><input id="fbUrl" type="text" placeholder="https://xxx.firebaseio.com/" onblur="saveSyncConfig()"></div>
+      <div><label>自訂個人密鑰</label><input id="fbKey" type="password" placeholder="任意密碼" onblur="saveSyncConfig()"></div>
+      <div style="grid-column:1/-1"><label>股價代理 API（選填，解決 iPhone / GitHub Pages 無法同步股價）</label><input id="priceProxyUrl" type="text" placeholder="https://你的-worker.workers.dev/quote?symbol=" onblur="saveSyncConfig()"></div>
+    </div>
+    <button class="btn" style="width:100%;margin-top:10px" onclick="loadFromCloud()">連線同步</button>
+    <div class="warn" style="margin-top:10px">股價同步若一直失敗，請在上方填入 Cloudflare Worker 代理網址；沒有代理時仍可手動輸入股價。</div>
+  </div>
+</details>
+
+<details>
+  <summary>🏦 借款 / 加碼 / 模擬參數 <span class="pill">進階設定</span></summary>
+  <div class="inside">
+    <div class="grid2">
+      <div><label>現金（萬元）</label><input id="cash" type="number" value="200" oninput="updateAndSync()"></div>
+      <div><label>借款金額（萬元）</label><input id="loanAmount" type="number" value="155" oninput="updateAndSync()"></div>
+      <div><label>年利率（%）</label><input id="loanRate" type="number" step="0.01" value="4.23" oninput="updateAndSync()"></div>
+      <div><label>貸款總期數（月）</label><input id="loanTotalMonths" type="number" value="60" oninput="updateAndSync()"></div>
+      <div><label>00631L 年化 %</label><input id="rate631" type="number" value="14" oninput="updateAndSync()"></div>
+      <div><label>0050 年化 %</label><input id="rate50" type="number" value="9" oninput="updateAndSync()"></div>
+      <div><label>00865B 年化 %</label><input id="rateBond" type="number" value="4.5" oninput="updateAndSync()"></div>
+      <div><label>00631L 目標 %</label><input id="pct631" type="number" value="40" oninput="updateAndSync()"></div>
+      <div><label>0050 目標 %</label><input id="pct50" type="number" value="20" oninput="updateAndSync()"></div>
+      <div><label>00865B 目標 %</label><input id="pctBond" type="number" value="20" oninput="updateAndSync()"></div>
+      <div><label>加碼金額（萬元）</label><input id="addOnAmt" type="number" value="50" oninput="updateAndSync()"></div>
+      <div><label>加碼發生第幾年</label><input id="addOnYear" type="number" value="2" oninput="updateAndSync()"></div>
+    </div>
+  </div>
+</details>
+
+
+<details>
+  <summary>🧩 Cloudflare Worker 代理程式碼 <span class="pill">複製用</span></summary>
+  <div class="inside">
+    <div class="warn">建立 Worker 後，把網址填到「股價代理 API」。範例：https://你的-worker.workers.dev/quote?symbol=</div>
+    <textarea readonly style="width:100%;min-height:360px;margin-top:10px;background:#0d1522;color:#dff7ff;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px;font-size:12px;line-height:1.45">export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    const symbol = url.searchParams.get("symbol") || "00631L.TW";
+
+    if (url.pathname !== "/quote") {
+      return new Response("Use /quote?symbol=00631L.TW", {
+        headers: { "access-control-allow-origin": "*" }
+      });
+    }
+
+    const yahoo = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`;
+    const res = await fetch(yahoo, {
+      headers: { "user-agent": "Mozilla/5.0" }
+    });
+
+    if (!res.ok) {
+      return new Response(JSON.stringify({ error: "Yahoo fetch failed" }), {
+        status: 502,
+        headers: {
+          "content-type": "application/json",
+          "access-control-allow-origin": "*"
+        }
+      });
+    }
+
+    const data = await res.json();
+    const meta = data?.chart?.result?.[0]?.meta || {};
+    return new Response(JSON.stringify({
+      symbol,
+      price: meta.regularMarketPrice,
+      previousClose: meta.chartPreviousClose,
+      currency: meta.currency,
+      time: Date.now()
+    }), {
+      headers: {
+        "content-type": "application/json",
+        "access-control-allow-origin": "*",
+        "cache-control": "no-store"
+      }
+    });
+  }
+}</textarea>
+  </div>
+</details>
+
+<p class="footer">僅供資產管理與情境試算，不代表投資建議。</p>
+</div>
+
+<script>
+const CONF_KEY='v5-conf', STATE_KEY='v5-state';
+let syncTimer=null,isCloudSyncing=false,crashAlt=false;
+let prices={p631:40.2,p50:150,pBond:48.15}, prevPrices={p631:40.2,p50:150,pBond:48.15}, status={p631:'手動價',p50:'手動價',pBond:'手動價'};
+const assets=[
+ {key:'p631',name:'00631L',short:'631L',shares:'shares631',price:'price631',ticker:'00631L.TW',beta:1.9,target:'pct631',color:'#4fc3f7'},
+ {key:'p50',name:'0050',short:'0050',shares:'shares50',price:'price50',ticker:'0050.TW',beta:1,target:'pct50',color:'#9aa5ff'},
+ {key:'pBond',name:'00865B',short:'865B',shares:'sharesBond',price:'priceBond',ticker:'00865B.TW',beta:.05,target:'pctBond',color:'#91e7a7'}
+];
+function g(id){return document.getElementById(id)}
+function n(id){return parseFloat(g(id)?.value)||0}
+function fmt(v){const a=Math.abs(v);if(a>=1e8)return (v/1e8).toFixed(2)+'億';if(a>=1e7)return (v/1e7).toFixed(2)+'千萬';if(a>=1e6)return (v/1e6).toFixed(2)+'百萬';return (v/1e4).toFixed(1)+'萬'}
+function normalizeUrl(u){u=(u||'').trim();return u&&!u.endsWith('/')?u+'/':u}
+async function hashKey(s){const d=new TextEncoder().encode(s);const h=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32)}
+function initInputs(){
+  g('editAssets').innerHTML=assets.map(a=>`<div class="grid2" style="margin-bottom:10px">
+    <div><label>${a.name} 持股數</label><input id="${a.shares}" type="number" value="${a.key==='p631'?72000:a.key==='p50'?5000:9000}" oninput="updateAndSync()"></div>
+    <div><label>${a.name} 股價</label><input id="${a.price}" type="number" step="0.01" value="${prices[a.key]}" oninput="manualPrice('${a.key}','${a.price}')"></div>
+  </div>`).join('');
+}
+function manualPrice(k,id){let v=parseFloat(g(id).value);if(v>0){prices[k]=v;status[k]='手動價'}updateAndSync()}
+async function fetchQuote(ticker){
+ // v5.1：先走自訂股價代理，避免 GitHub Pages / iPhone Safari 被 CORS 擋住
+ const conf=JSON.parse(localStorage.getItem(CONF_KEY)||'{}');
+ const proxy=(conf.priceProxyUrl||'').trim();
+ if(proxy){
+   const url=proxy.includes('?') ? proxy + encodeURIComponent(ticker) : proxy.replace(/\/$/,'') + '/quote?symbol=' + encodeURIComponent(ticker);
+   const r=await fetch(url,{cache:'no-store'});
+   if(!r.ok) throw new Error('proxy failed');
+   const j=await r.json();
+   const p=j.price ?? j.regularMarketPrice ?? j.close ?? j.c;
+   if(p && isFinite(Number(p))) return Number(p);
+   throw new Error('proxy invalid');
+ }
+ // 沒有代理時，嘗試直接 Yahoo；多數手機瀏覽器可能因 CORS 失敗
+ for(const host of ['query1.finance.yahoo.com','query2.finance.yahoo.com']){
+  try{
+   let r=await fetch(`https://${host}/v8/finance/chart/${ticker}`,{cache:'no-store'});
+   if(!r.ok)continue;
+   let j=await r.json();
+   let p=j?.chart?.result?.[0]?.meta?.regularMarketPrice;
+   if(p&&isFinite(p))return p;
+  }catch(e){}
+ }
+ throw new Error('quote failed')
+}
+async function refreshOne(k){
+ const a=assets.find(x=>x.key===k); status[k]='同步中'; update();
+ try{let p=await fetchQuote(a.ticker);prevPrices[k]=prices[k];prices[k]=p;if(g(a.price))g(a.price).value=p;status[k]='已更新 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}
+ catch(e){status[k]='更新失敗'}
+ updateAndSync();
+}
+async function refreshAll(){await Promise.allSettled(assets.map(a=>refreshOne(a.key)))}
+function calc(){
+ let vals={},stock=0,beta=0,day=0;
+ assets.forEach(a=>{vals[a.key]=n(a.shares)*prices[a.key];stock+=vals[a.key];day+=n(a.shares)*(prices[a.key]-prevPrices[a.key])});
+ let cash=n('cash')*10000,loan=n('loanAmount')*10000,total=stock+cash,net=total-loan;
+ assets.forEach(a=>{if(total)beta+=vals[a.key]/total*a.beta});
+ return {vals,stock,cash,loan,total,net,beta,day};
+}
+function update(){
+ const c=calc();
+ g('heroTotal').textContent=fmt(c.total); g('netAssets').textContent=fmt(c.net); g('realBeta').textContent=c.beta.toFixed(2);
+ g('riskType').textContent=c.beta>1.35?'積極偏高':c.beta>.85?'穩健型':'保守型';
+ g('cashPct').textContent=c.total?(c.cash/c.total*100).toFixed(1)+'%':'-';
+ g('todayGain').textContent=(c.day>=0?'今日損益：+':'今日損益：')+fmt(c.day)+(c.day===0?'（以手動價估算）':'');
+ renderAI(c); renderDash(c); renderRing(c); renderDrift(c); renderCrash(c); const data=makeData(c.total); renderChart(data,c.total); renderResults(data,c.total);
+ const fails=assets.filter(a=>status[a.key].includes('失敗')).map(a=>a.name);
+ g('quoteWarn').style.display=fails.length?'block':'none';
+ g('quoteWarn').textContent=fails.length?`⚠️ ${fails.join('、')} 股價更新失敗，已使用目前手動價格。若要自動同步，請到「Firebase 雲端同步」填入股價代理 API。`:'';
+}
+function renderAI(c){
+ let p631=c.total?c.vals.p631/c.total*100:0, cashP=c.total?c.cash/c.total*100:0, score=100;
+ if(c.beta>1.25)score-=8; if(p631>n('pct631')+6)score-=6; if(cashP<15)score-=6; if(cashP>25)score+=2; score=Math.max(60,Math.min(99,score));
+ g('score').textContent=score;
+ let msg=[];
+ msg.push(`綜合評分 ${score}/100。`);
+ if(c.beta>1.25) msg.push(`Beta ${c.beta.toFixed(2)} 偏高，建議暫停槓桿加碼。`); else msg.push(`Beta ${c.beta.toFixed(2)} 屬可控區間。`);
+ if(p631>n('pct631')+6) msg.push(`00631L 高於目標約 ${(p631-n('pct631')).toFixed(1)}%，等待回落或再平衡。`);
+ if(cashP>25) msg.push(`現金 ${cashP.toFixed(1)}%，防禦資金充足，可保留作為大跌加碼彈藥。`);
+ g('aiAdvice').textContent=msg.join(' ');
+}
+function renderDash(c){
+ g('assetDash').innerHTML=assets.map(a=>{
+  let v=c.vals[a.key], ratio=c.total?v/c.total*100:0, daily=(prices[a.key]-prevPrices[a.key])*n(a.shares);
+  let st=status[a.key], cls=st.includes('失敗')?'fail':(st==='手動價'?'manual':'');
+  return `<div class="asset-tile">
+    <div class="asset-top"><div class="badge" style="background:${a.color}">${a.short}</div><div><div class="asset-name">${a.name}</div><div class="asset-meta">${Math.round(n(a.shares)).toLocaleString()} 股｜${prices[a.key].toFixed(2)} 元｜<span class="status ${cls}">${st}</span></div></div></div>
+    <div class="asset-val">${fmt(v)}</div>
+    <div class="asset-row"><span>配置</span><b>${ratio.toFixed(1)}%</b></div>
+    <div class="asset-row"><span>今日</span><b style="color:${daily>=0?'var(--green)':'var(--red)'}">${daily>=0?'+':''}${fmt(daily)}</b></div>
+  </div>`
+ }).join('');
+ const arr=[['631L',c.vals.p631,'#4fc3f7'],['0050',c.vals.p50,'#9aa5ff'],['865B',c.vals.pBond,'#91e7a7'],['現金',c.cash,'#ffd54f']];
+ g('allocBar').innerHTML=arr.map(x=>`<div style="flex:${c.total?x[1]/c.total*100:0};background:${x[2]}"></div>`).join('');
+ g('allocLegend').innerHTML=arr.map(x=>`<span><i class="dot" style="background:${x[2]}"></i>${x[0]} ${c.total?(x[1]/c.total*100).toFixed(1):0}%</span>`).join('');
+}
+function renderRing(c){
+ let p631=c.total?c.vals.p631/c.total*100:0,p50=c.total?c.vals.p50/c.total*100:0,pb=c.total?c.vals.pBond/c.total*100:0,pc=c.total?c.cash/c.total*100:0;
+ g('ring').style.background=`conic-gradient(#4fc3f7 0 ${p631}%,#9aa5ff ${p631}% ${p631+p50}%,#91e7a7 ${p631+p50}% ${p631+p50+pb}%,#ffd54f ${p631+p50+pb}% 100%)`;
+ const rows=[['00631L',p631,'#4fc3f7'],['0050',p50,'#9aa5ff'],['00865B',pb,'#91e7a7'],['現金',pc,'#ffd54f']];
+ g('ringText').innerHTML=rows.map(r=>`<div class="kpi"><div class="label">${r[0]}</div><div class="value" style="font-size:20px;color:${r[2]}">${r[1].toFixed(1)}%</div></div>`).join('');
+}
+function renderDrift(c){
+ const targetCash=Math.max(0,100-n('pct631')-n('pct50')-n('pctBond'));
+ const rows=[['00631L',c.vals.p631,n('pct631'),'#4fc3f7'],['0050',c.vals.p50,n('pct50'),'#9aa5ff'],['00865B',c.vals.pBond,n('pctBond'),'#91e7a7'],['現金',c.cash,targetCash,'#ffd54f']];
+ g('driftCards').innerHTML=rows.map(r=>{let now=c.total?r[1]/c.total*100:0,d=now-r[2];return `<div class="kpi"><div class="label">${r[0]}</div><div class="value" style="font-size:22px;color:${Math.abs(d)>8?'var(--yellow)':r[3]}">${d>=0?'+':''}${d.toFixed(1)}%</div><div class="hint">目前 ${now.toFixed(1)}%｜目標 ${r[2]}%</div></div>`}).join('');
+}
+function renderCrash(c){
+ const drops=crashAlt?[10,20,30,40]:[20,30,50];
+ g('crashCards').innerHTML=drops.map(d=>{
+  let loss=c.vals.p631*d/100*1.9+c.vals.p50*d/100+c.vals.pBond*d/100*.05, after=c.total-loss, buy=Math.floor(c.cash/(prices.p631*(1-d/100)*1000));
+  return `<div class="kpi"><div class="label">大盤跌 -${d}%</div><div class="value" style="font-size:20px;color:var(--red)">-${fmt(loss)}</div><div class="hint">總資產約 ${fmt(after)}｜現金可買631L約 ${buy} 張</div></div>`
+ }).join('');
+ g('crashAdvice').textContent=`大跌時優先確認現金與借款壓力。若 00631L 仍高於目標配置，不建議一次投入全部現金，可分批加碼。`;
+}
+function toggleCrash(){crashAlt=!crashAlt;update()}
+function setReturnPreset(type,btn){
+ document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+ if(type===0){g('rate631').value=10;g('rate50').value=7;g('rateBond').value=3.5}
+ if(type===1){g('rate631').value=14;g('rate50').value=9;g('rateBond').value=4.5}
+ if(type===2){g('rate631').value=18;g('rate50').value=11;g('rateBond').value=5.5}
+ updateAndSync()
+}
+function makeData(total){
+ let p631=n('pct631'),p50=n('pct50'),pBond=n('pctBond'),pCash=Math.max(0,100-p631-p50-pBond);
+ let init={p631:total*p631/100,p50:total*p50/100,pBond:total*pBond/100,cash:total*pCash/100};
+ let r631=n('rate631')/100,r50=n('rate50')/100,rBond=n('rateBond')/100,add=n('addOnAmt')*10000,ay=n('addOnYear');
+ let out=[];for(let i=0;i<=10;i++){let v631=init.p631*(1+r631)**i,v50=init.p50*(1+r50)**i,vBond=init.pBond*(1+rBond)**i,vCash=init.cash,vAdd=i>=ay?add*(1+r631)**(i-ay):0;out.push({i,v631,v50,vBond,vCash,vAdd,total:v631+v50+vBond+vCash+vAdd})}return out
+}
+function renderChart(data,cost){
+ let canvas=g('chart'),dpr=devicePixelRatio||1,W=canvas.clientWidth,H=260;canvas.width=W*dpr;canvas.height=H*dpr;let ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+ let pad={l:58,r:10,t:16,b:28},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b,max=Math.max(...data.map(d=>d.total))*1.08||1,x=i=>pad.l+i*cw/10,y=v=>pad.t+ch*(1-v/max);
+ ctx.strokeStyle='rgba(255,255,255,.10)';ctx.fillStyle='#8ca0b3';ctx.font='10px -apple-system';
+ for(let i=0;i<=4;i++){let yy=pad.t+i*ch/4,val=max*(1-i/4);ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();ctx.textAlign='right';ctx.fillText(fmt(val),pad.l-7,yy+3)}
+ let layers=[['vCash','#ffd54f'],['vBond','#91e7a7'],['v50','#9aa5ff'],['vAdd','#ffb74d'],['v631','#4fc3f7']],bottom=data.map(_=>0);
+ layers.forEach(([k,col])=>{ctx.beginPath();data.forEach((d,i)=>{let top=bottom[i]+d[k];i?ctx.lineTo(x(i),y(top)):ctx.moveTo(x(i),y(top))});for(let i=data.length-1;i>=0;i--)ctx.lineTo(x(i),y(bottom[i]));ctx.closePath();ctx.fillStyle=col+'55';ctx.fill();bottom=bottom.map((b,i)=>b+data[i][k])});
+ ctx.strokeStyle='rgba(255,138,128,.9)';ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(x(0),y(cost));ctx.lineTo(x(10),y(cost));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#8ca0b3';ctx.textAlign='center';for(let i=0;i<=10;i+=2)ctx.fillText(i+'年',x(i),H-8)
+}
+function renderResults(data,cost){
+ let five=data[5].total,ten=data[10].total,cagr=Math.pow(ten/cost,1/10)-1;
+ g('resultCards').innerHTML=[['5年',fmt(five),'+'+fmt(five-cost),'#4fc3f7'],['10年',fmt(ten),'+'+fmt(ten-cost),'#ce93d8'],['CAGR',isFinite(cagr)?(cagr*100).toFixed(1)+'%':'-','年化估算','#91e7a7']].map(x=>`<div class="kpi"><div class="label">${x[0]}</div><div class="value" style="font-size:20px;color:${x[3]}">${x[1]}</div><div class="hint">${x[2]}</div></div>`).join('');
+}
+function getSettings(){return {prices,prevPrices,status,shares631:n('shares631'),shares50:n('shares50'),sharesBond:n('sharesBond'),cash:n('cash'),loanAmount:n('loanAmount'),loanRate:n('loanRate'),loanTotalMonths:n('loanTotalMonths'),rate631:n('rate631'),rate50:n('rate50'),rateBond:n('rateBond'),pct631:n('pct631'),pct50:n('pct50'),pctBond:n('pctBond'),addOnAmt:n('addOnAmt'),addOnYear:n('addOnYear')}}
+function saveLocal(){try{localStorage.setItem(STATE_KEY,JSON.stringify(getSettings()))}catch(e){}}
+function applySettings(s){if(!s)return;isCloudSyncing=true;if(s.prices)prices={...prices,...s.prices};if(s.prevPrices)prevPrices={...prevPrices,...s.prevPrices};if(s.status)status={...status,...s.status};Object.keys(s).forEach(k=>{if(g(k)&&typeof s[k]!=='object')g(k).value=s[k]});assets.forEach(a=>{if(g(a.price))g(a.price).value=prices[a.key]});isCloudSyncing=false;update()}
+function saveSyncConfig(){let conf={url:normalizeUrl(g('fbUrl').value),key:g('fbKey').value.trim(),priceProxyUrl:(g('priceProxyUrl')?g('priceProxyUrl').value.trim():'')};g('fbUrl').value=conf.url;try{localStorage.setItem(CONF_KEY,JSON.stringify(conf))}catch(e){}}
+async function syncToCloud(){if(isCloudSyncing)return;let conf=JSON.parse(localStorage.getItem(CONF_KEY)||'{}');if(!conf.url||!conf.key)return;try{let path=await hashKey(conf.key);g('cloudStatus').textContent='同步中';g('syncMini').textContent='同步中';await fetch(normalizeUrl(conf.url)+path+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(getSettings())});g('cloudStatus').textContent='✅ 已同步';g('syncMini').textContent='☁ 已同步'}catch(e){g('cloudStatus').textContent='❌ 失敗';g('syncMini').textContent='☁ 同步失敗'}}
+function updateAndSync(){update();saveLocal();clearTimeout(syncTimer);syncTimer=setTimeout(syncToCloud,900)}
+async function loadFromCloud(){saveSyncConfig();let conf=JSON.parse(localStorage.getItem(CONF_KEY)||'{}');if(!conf.url||!conf.key){alert('請輸入 Firebase 網址與密鑰');return}try{let path=await hashKey(conf.key);g('cloudStatus').textContent='下載中';let r=await fetch(normalizeUrl(conf.url)+path+'.json');let d=await r.json();if(d)applySettings(d);else updateAndSync();g('cloudStatus').textContent='✅ 已連線';g('syncMini').textContent='☁ 已同步'}catch(e){g('cloudStatus').textContent='❌ 連線失敗'}}
+function init(){initInputs();let conf=JSON.parse(localStorage.getItem(CONF_KEY)||'{}');if(conf.url)g('fbUrl').value=conf.url;if(conf.key)g('fbKey').value=conf.key;if(conf.priceProxyUrl&&g('priceProxyUrl'))g('priceProxyUrl').value=conf.priceProxyUrl;try{let s=JSON.parse(localStorage.getItem(STATE_KEY)||'null');if(s)applySettings(s)}catch(e){}update();if(conf.url&&conf.key)loadFromCloud();setTimeout(refreshAll,800)}
+window.addEventListener('resize',update);init();
+</script>
+</body>
+</html>
